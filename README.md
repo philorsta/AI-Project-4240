@@ -12,6 +12,7 @@ these tools offered relief from the loneliness of isolation. These apps became
 such a part of the public consciousness that even as public spaces began to
 populate again, these technologies stuck around. They are still being used
 daily and are now a fundamental part of business and education.
+
 Though these apps gave an answer to one of the biggest questions of this
 decade, they came with some inadequacies. The subtle-but-many problems
 permeating telecommunications: poor connections, dropped packets, noises that
@@ -19,6 +20,7 @@ are amplified by integrated microphones, the loss of information inherent in
 compression algorithms necessary to transfer enormous video files across the
 internet, all frustrate communication. This project offers a solution in three
 parts.
+
 Before audio gets distorted by compression, an AI powered tool will isolate the
 speaker’s voice, attenuate competing frequencies, and accentuate the
 frequencies that best carry speech information. Packet loss can turn the
