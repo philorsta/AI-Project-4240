@@ -40,9 +40,10 @@ Aid those with sight impairments, autism, and bad internet connections.
 ___
 ## TOOLS
 
-Krisp - audio cleaning and voice isolation
-Facial recognition software - TBD - determine facial expressions
-Subtitling software - TBD - generate subtitles
+- Krisp - audio cleaning and voice isolation
+- Facial recognition software - TBD - determine facial expressions
+- Subtitling software - TBD - generate subtitles
+
 We will likely discover tools are a better fit for this project as we research
 this topic further.
 ___
@@ -57,6 +58,6 @@ ___
 
 Docker instructions here
 ___
-
 ## Design Overview
+
 Link to high-level flowchart or design here
