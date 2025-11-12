@@ -17,19 +17,11 @@ import os
 import sys
 import moviepy.editor as mp
 from pathlib import Path
+from audio_cleaning import process_audio_with_cleanvoice
 
 
 # LOAD VIDEO
 def load_video(video_path):
-    """
-    Loads a video file using MoviePy.
-
-    Args:
-        video_path (Path): The path to the video file selected by the user.
-
-    Returns:
-        moviepy.video.io.VideoFileClip.VideoFileClip: The loaded video object.
-    """
     try:
         video = mp.VideoFileClip(str(video_path))
         return video
@@ -40,13 +32,7 @@ def load_video(video_path):
 
 # MAIN
 def main():
-    """
-    Main entry point for the AI Assisted Communication project.
 
-    Step 1: Load a user-specified video file.
-    Step 2: Display video metadata (duration, FPS, resolution).
-    Step 3: Provide placeholder sections for AI processing tasks.
-    """
     print("AI Assisted Communication Project")
     print("---------------------------------------------------")
 
@@ -75,7 +61,9 @@ def main():
 
     # AUDIO CLEANING & EXTRACTION
     # Placeholder for integrating audio noise reduction and voice isolation.
-
+    print("\nAudio Cleaning and Extraction...")
+    cleaned_audio_file = process_audio_with_cleanvoice(video_path, api_key)
+    print(f"Cleaned audio file: {cleaned_audio_file}\n")
 
     # FACIAL EXPRESSION ANALYSIS
     # Placeholder for emotion detection and facial expression recognition.
