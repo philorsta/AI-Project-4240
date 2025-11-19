@@ -304,21 +304,24 @@ def analyze_video(video_path, output_path=None):
     # main loop: read frames, display with overlay, enqueue for analysis
     while True:
         ret, frame = vid.read()
+        # end of video
         if not ret:
             break
+        # sample frame for analysis
         if idx % SAMPLE_EVERY_N_FRAMES == 0:
-            # enqueue sampled frames for background analysis; don't block display
             try:
                 frame_q.put_nowait((idx, frame.copy()))
+            # enqueue failed
             except queue.Full:
-                # drop this sample if worker is busy
                 pass
+            # DeepFace can occasionally fail on a frame — skip
             except Exception as e:
-                # DeepFace can occasionally fail on a frame — skip
                 print(f"frame {idx} analysis error: {e}")
+                
+        # increment frame index and continue building display frame
         idx += 1
-        # Build display_frame with overlays (text + emoji) regardless of display mode
         display_frame = frame.copy()
+        
         # read latest result
         with result_lock:
             last_label = shared.get("label", "")
@@ -336,6 +339,7 @@ def analyze_video(video_path, output_path=None):
             display_conf = sum(pred_confs) / len(pred_confs) if len(pred_confs) > 0 else last_conf
             prev_display_label = display_label
             text = f"{display_label} ({display_conf:.1f}%)"
+        # no predictions in window
         else:
             # no recent high-confidence predictions; fall back to previous displayed label to avoid flicker
             if prev_display_label:
@@ -346,6 +350,7 @@ def analyze_video(video_path, output_path=None):
 
         # Overlay emoji image in the top-right if available for the current label
         try:
+            # determine which emoji to show
             emoji_label = None
             if len(preds) > 0:
                 emoji_label = display_label
@@ -361,6 +366,7 @@ def analyze_video(video_path, output_path=None):
                 x = display_frame.shape[1] - ew - 10
                 y = 10
                 display_frame = overlay_image_alpha(display_frame, emo_img, x, y, (ew, eh))
+        # overlay failed
         except Exception:
             pass
 
@@ -370,9 +376,11 @@ def analyze_video(video_path, output_path=None):
                 # ensure frame size matches writer expectations
                 if (display_frame.shape[1], display_frame.shape[0]) != (src_w, src_h):
                     out_frame = cv2.resize(display_frame, (src_w, src_h))
+                # no resize needed
                 else:
                     out_frame = display_frame
                 writer.write(out_frame)
+            # writing failed
             except Exception:
                 pass
 
@@ -388,7 +396,8 @@ def analyze_video(video_path, output_path=None):
         if FRAME_LIMIT and processed >= FRAME_LIMIT:
             break
 
-    vid.release()
+    vid.release()  # release video capture
+    
     # shut down worker
     stop_event.set()
     try:
@@ -399,6 +408,7 @@ def analyze_video(video_path, output_path=None):
     worker.join(timeout=2.0)
     if DISPLAY:
         cv2.destroyAllWindows()
+       
     # release video writer if used
     if writer is not None:
         try:
@@ -406,9 +416,11 @@ def analyze_video(video_path, output_path=None):
             print(f"Finished writing output: {output_path}")
         except Exception:
             pass
+        
     # Aggregate per-video label (majority vote) and per-frame counts
     # aggregate using worker-processed count if available
     counts = Counter(results)
+    
     # try to use shared processed count as authoritative
     processed = shared.get("processed", processed)
     if len(results) == 0:
@@ -417,6 +429,10 @@ def analyze_video(video_path, output_path=None):
         overall = counts.most_common(1)[0][0]
     return {"per_frame_counts": dict(counts), "overall": overall, "frames_analyzed": processed}
 
+"""
+Funciton: _parse_args
+Purpose: Parse command-line arguments for video analysis script.      
+"""
 def _parse_args():
     parser = argparse.ArgumentParser(description="Analyze a video with DeepFace and display emotion overlay.")
     parser.add_argument("video", nargs="?", default=None,
@@ -430,7 +446,7 @@ def _parse_args():
     parser.add_argument("--output", "-o", default=None, help="Path to write output MP4 with overlays (e.g. out.mp4)")
     return parser.parse_args()
 
-
+# Main script entry point
 if __name__ == "__main__":
     args = _parse_args()
 
@@ -472,6 +488,7 @@ if __name__ == "__main__":
     SMOOTH_WINDOW = max(1, int(args.window))
     MIN_CONF = float(args.min_conf)
 
+    # run / print analysis
     out = analyze_video(video_path, output_path=args.output)
     print("Frames analyzed:", out["frames_analyzed"])
     print("Per-frame counts:", out["per_frame_counts"])
