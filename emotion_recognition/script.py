@@ -17,6 +17,12 @@ DISPLAY = True                  # show video window with overlay
 WINDOW_NAME = "DeepFace - Emotion"
 SMOOTH_WINDOW = 7               # rolling window size for smoothing predictions
 MIN_CONF = 40.0                 # minimum confidence percent required to accept a prediction into the window
+EMOJI_DIR = "emoji"           # folder containing emoji PNGs
+EMOJI_FILES = {                # map of label -> filename
+    "happy": "happy.png",
+    "neutral": "neutral.png",
+    "sad": "sad.png",
+}
 
 # Map DeepFace emotion labels to your 3 classes
 MAP_TO_3 = {
@@ -44,6 +50,45 @@ def analyze_video(video_path):
     idx = 0
     processed = 0
     results = []
+
+    # Helper: overlay an RGBA (or RGB) image onto a BGR frame using alpha blending
+    def overlay_image_alpha(img, overlay, x, y, overlay_size=None):
+        if overlay is None:
+            return img
+        # resize overlay if requested (overlay_size is (w, h))
+        if overlay_size is not None:
+            try:
+                overlay = cv2.resize(overlay, overlay_size, interpolation=cv2.INTER_AREA)
+            except Exception:
+                pass
+        h_ol, w_ol = overlay.shape[:2]
+        h_img, w_img = img.shape[:2]
+        if x >= w_img or y >= h_img:
+            return img
+        # clip overlay to image bounds
+        x1 = max(x, 0)
+        y1 = max(y, 0)
+        x2 = min(x + w_ol, w_img)
+        y2 = min(y + h_ol, h_img)
+        ol_x1 = x1 - x
+        ol_y1 = y1 - y
+        ol_x2 = ol_x1 + (x2 - x1)
+        ol_y2 = ol_y1 + (y2 - y1)
+        overlay_cropped = overlay[ol_y1:ol_y2, ol_x1:ol_x2]
+        if overlay_cropped.size == 0:
+            return img
+        if overlay_cropped.shape[2] == 4:
+            # has alpha channel
+            alpha = overlay_cropped[:, :, 3].astype(float) / 255.0
+            alpha = alpha[..., None]
+            overlay_rgb = overlay_cropped[:, :, :3].astype(float)
+            roi = img[y1:y2, x1:x2].astype(float)
+            blended = overlay_rgb * alpha + roi * (1 - alpha)
+            img[y1:y2, x1:x2] = blended.astype(img.dtype)
+        else:
+            # no alpha -> copy
+            img[y1:y2, x1:x2] = overlay_cropped[:, :, :3]
+        return img
 
     # For smooth playback: use a worker thread to do heavy analysis while main thread displays frames
     frame_q = queue.Queue(maxsize=4)
@@ -121,6 +166,23 @@ def analyze_video(video_path):
     worker = AnalyzerWorker(frame_q, shared, result_lock, stop_event)
     worker.start()
 
+    # Load emoji images (if present) once to avoid repeated disk access
+    emoji_imgs = {}
+    try:
+        for label, fname in EMOJI_FILES.items():
+            path = os.path.join(EMOJI_DIR, fname)
+            if os.path.isfile(path):
+                img = cv2.imread(path, cv2.IMREAD_UNCHANGED)
+                if img is None:
+                    print(f"WARNING: failed to load emoji: {path}")
+                else:
+                    emoji_imgs[label] = img
+            else:
+                # don't spam for each frame; just note missing once
+                pass
+    except Exception:
+        pass
+
     # Prepare display window to avoid automatic OS/window scaling/zooming
     if DISPLAY:
         try:
@@ -191,6 +253,25 @@ def analyze_video(video_path):
                 else:
                     text = "no prediction"
             cv2.putText(display_frame, text, (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1.0, (0, 255, 0), 2, cv2.LINE_AA)
+            # Overlay emoji image in the top-right if available for the current label
+            try:
+                emoji_label = None
+                if len(preds) > 0:
+                    emoji_label = display_label
+                elif prev_display_label:
+                    emoji_label = prev_display_label
+                if emoji_label and emoji_label in emoji_imgs:
+                    emo_img = emoji_imgs[emoji_label]
+                    fw = display_frame.shape[1]
+                    # determine emoji width relative to frame, clamped
+                    ew = min(120, max(48, fw // 8))
+                    # preserve overlay aspect
+                    eh = int(ew * (emo_img.shape[0] / max(1, emo_img.shape[1])))
+                    x = display_frame.shape[1] - ew - 10
+                    y = 10
+                    display_frame = overlay_image_alpha(display_frame, emo_img, x, y, (ew, eh))
+            except Exception:
+                pass
             cv2.imshow(WINDOW_NAME, display_frame)
             # waitKey: compute a delay from FPS (but not less than 1)
             delay = max(1, int(1000.0 / fps))
