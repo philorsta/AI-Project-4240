@@ -92,6 +92,14 @@ pip install requests
 
 To use Cleanvoice for audio cleaning and transcription, you **must supply your API key**.
 
+How to get a Cleanvoice API Key :
+
+1. Go to: https://cleanvoice.ai/api
+2. Create an account (free trial usually available)
+3. Navigate to Dashboard → API Keys
+4. Click Create API Key
+5. Copy the generated key
+
 ### **Where to put the API key**
 Inside `project.py`, the key is defined here:
 
