@@ -57,7 +57,7 @@ def main():
     print("\nAudio Cleaning and Extraction...")
 
     # Your Cleanvoice API key
-    api_key = "YOUR API KEY HERE"
+    api_key = "YOUR API HERE"
 
     cleaned_audio_file = process_audio_with_cleanvoice(video_path, api_key)
     print(f"Cleaned audio file: {cleaned_audio_file}\n")
