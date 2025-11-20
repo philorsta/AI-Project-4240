@@ -87,3 +87,14 @@ Before running the project locally, install:
 pip install moviepy
 pip install cleanvoice-sdk
 pip install requests
+
+## Cleanvoice API Key Setup
+
+To use Cleanvoice for audio cleaning and transcription, you **must supply your API key**.
+
+### **Where to put the API key**
+Inside `project.py`, the key is defined here:
+
+```python
+api_key = "YOUR_API_KEY_HERE"
+
