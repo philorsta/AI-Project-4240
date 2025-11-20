@@ -61,3 +61,29 @@ ___
 ## Design Overview
 
 Link to high-level flowchart or design here
+
+---
+
+# Audio Cleaning & Transcription (Implementation Details)
+
+This project processes video files by automatically:
+
+1. **Extracting the audio track**
+2. **Cleaning the audio using Cleanvoice’s AI engine**
+3. **Saving a cleaned audio file**
+4. **Generating a full transcription**
+5. **Saving the transcription as a `.txt` file**
+6. **Replacing the original video’s audio with the cleaned version**
+
+All audio logic is implemented inside `audio_cleaning.py`.
+
+---
+
+## Required Installations
+
+Before running the project locally, install:
+
+```bash
+pip install moviepy
+pip install cleanvoice-sdk
+pip install requests
