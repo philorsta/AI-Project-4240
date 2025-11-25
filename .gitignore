@@ -1,3 +1,7 @@
 # Ignore README and Project Proposal
 README.md
 *.pdf
+
+# Ignore virtual environment directories
+venv/
+.venv/
