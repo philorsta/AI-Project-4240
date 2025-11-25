@@ -1,0 +1,23 @@
+# Core dependencies for AI Assisted Communication Project
+# Install with: pip install -r requirements.txt
+# NOTE: This is ran on python 3.12.10
+
+# Video processing
+moviepy==1.0.3
+
+# Computer vision and image processing
+opencv-python>=4.8.0
+
+# Deep learning for emotion recognition
+deepface>=0.0.79
+tensorflow>=2.16.0
+tf-keras>=2.16.0
+
+# Audio processing with Cleanvoice AI
+cleanvoice-sdk>=0.1.0
+
+# Additional dependencies (installed automatically by above packages)
+# numpy
+# pandas
+# pillow
+# scipy
