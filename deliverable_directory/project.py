@@ -68,7 +68,7 @@ def main():
     print("=" * 60)
 
     # Your Cleanvoice API key
-    api_key = "cvk_kqE3fsqXlIo.3WtXo1GmnhPkd04m3zZHPel1wBdYBtvAqFTQBcIoiaA"
+    api_key = "YOUR_API_KEY_HERE"  # Replace with your actual API key
 
     try:
         cleaned_audio_file = process_audio_with_cleanvoice(str(video_path), api_key)
