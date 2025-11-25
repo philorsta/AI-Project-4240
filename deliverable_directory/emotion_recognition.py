@@ -14,9 +14,9 @@ from collections import Counter, deque
 
 # Configuration
 SAMPLE_EVERY_N_FRAMES = 5
-SMOOTH_WINDOW = 15  # Increased from 7 to 15 for more stability
-MIN_CONF = 50.0  # Increased from 40 to 50 to filter out weak predictions
-EMOJI_HOLD_FRAMES = 90  # Hold emoji for at least 90 frames (~3 seconds at 30fps)
+SMOOTH_WINDOW = 8  # Reduced to 8 - more responsive
+MIN_CONF = 43.0  # Lowered to 43 - accepts more predictions
+EMOJI_HOLD_FRAMES = 30  # Reduced to 30 (~1 second at 30fps)
 EMOJI_DIR = "emoji"
 EMOJI_FILES = {
     "happy": "happy.png",
@@ -213,7 +213,7 @@ def process_video_emotions(input_video_path, output_video_path):
     # Emoji stability tracking
     current_emoji = None
     emoji_frame_counter = 0
-    emoji_change_threshold = 0.7  # Need 70% consensus to change emoji
+    emoji_change_threshold = 0.55  # Reduced to 0.55 - needs only 55% consensus
     
     idx = 0
     
