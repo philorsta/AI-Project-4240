@@ -1,6 +1,6 @@
 # AUDIO CLEANING & EXTRACTION (Cleanvoice AI)
-from cleanvoice import Cleanvoice
-from moviepy.editor import VideoFileClip
+from cleanvoice import cleanvoice
+from moviepy import VideoFileClip
 
 # pip install cleanvoice-sdk
 
@@ -30,7 +30,7 @@ def process_audio_with_cleanvoice(video_path, api_key):
 
     # --- CLEANVOICE ---
     print("Initializing Cleanvoice SDK...")
-    cv = Cleanvoice({'api_key': api_key})
+    cv = cleanvoice({'api_key': api_key})
 
     print("Processing audio with AI-powered cleaning...")
     result, output_path = cv.process_and_download(

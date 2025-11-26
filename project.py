@@ -15,7 +15,7 @@ Description:
 # IMPORTS 
 import os
 import sys
-import moviepy.editor as mp
+import moviepy as mp
 from pathlib import Path
 from Audio_Cleaning.audio_cleaning import process_audio_with_cleanvoice
 
