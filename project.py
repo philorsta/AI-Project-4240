@@ -17,7 +17,7 @@ import os
 import sys
 import moviepy.editor as mp
 from pathlib import Path
-from audio_cleaning import process_audio_with_cleanvoice
+from Audio_Cleaning.audio_cleaning import process_audio_with_cleanvoice
 
 
 # LOAD VIDEO
