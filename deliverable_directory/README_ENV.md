@@ -87,6 +87,10 @@ The `requirements.txt` includes:
 - Make sure to check "Add Python to PATH" during installation
 - Restart PowerShell after installation
 
+### HTTP 401 Error
+- Missing api key. Make an account on cleanvoice and grab an api key
+- Populate api key in project.py line 71
+
 ### Execution Policy Error
 If you get "cannot be loaded because running scripts is disabled":
 ```powershell
