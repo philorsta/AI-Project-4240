@@ -111,6 +111,10 @@ Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 - The pipeline will continue using the original audio
 - Wait a few minutes and try again if you need the cleaning feature
 
+### Cleanvoice API Key
+
+- **Important:** Populate the Cleanvoice API key in `project.py` on line 71 before running the script. Replace the placeholder string with your Cleanvoice account API key, or set the `CLEANVOICE_API_KEY` environment variable if the code reads from it. The audio cleaning/transcription step will not work without a valid API key.
+
 ---
 
 ## Deactivating the Virtual Environment
